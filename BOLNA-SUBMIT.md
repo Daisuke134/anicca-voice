@@ -61,3 +61,15 @@ Anicca Pauseは、不安な時に一呼吸し、今いちばん強い考えを�
 Bolnaの利用可能な鍵、agent ID、Twilio接続・発信番号、同意済み受信番号は未確認。単なるconfig検証を発信・デモ完成・提出の成功として扱わない。既存の認可済み実行環境が見つかったら、そこで通常の認証と1回の発信を進める。提出先URL・締切・必須項目も未確認。
 
 実行環境の読み取り専用調査は `bolna_runtime_probe` へ委譲済みで、利用可能な設定は確認できないとの結果を受領。次の担当は既存の認可済みBolnaセッションを持つowner。秘密値をチャットに出さず、同じMacのCredential SSOTを使う。実通話の成功条件はBolna executionの完了・録音またはtranscriptと、Twilio callの完了・duration。60秒以内の映像は別途実ファイルで計測する。
+
+
+## Watchdog再開時の追加観測
+
+- Credential SSOT全191件を再読し、Bolna/Twilio/voiceに該当するservice登録なし。ブラウザregistryにも該当経路なし。秘密値の転記なし。
+- CUAでChromiumを選択すると `Computer Use was not approved to use Chromium`。UIの認可境界を迂回しない。
+- remote mainは `a590511095e93b2e70184d934ad935ce20f5da06`。作業branchを同commitまでfast-forwardした。
+- mainの `TRANSCRIPT.md` にはweb通話84.5秒という既存ownerの記録がある。execution ID・公式execution readback・Twilio Call SID・録画実ファイルは本作業では未取得。web通話をTwilio通話の成功として扱わない。既存ownerの外部effectを重複させないため新規発信なし。
+- [Bolna Builders](https://www.bolna.ai/builders) のHTTP 200本文にDaisuke134 / Anicca Pause / repoリンクの掲載を確認した。掲載は確認済みだが、Buildathon応募受理の証拠とは区別する。
+- [Builders提出フォーム](https://www.bolna.ai/builders/submit) はHTTP 200。項目はcategory・title・public link・description・handle。送信はpublic repoへのPRを開き、maintainerのmergeで掲載する方式。Buildathon締切・動画必須条件・コンテスト提出先は未確認。推測した `/buildathon` は404、DuckDuckGo検索はhuman challenge、crwlはローカルDBエラーだった。
+- floor2の `fable-main` へagmsgで認可済みowner経路、既存execution・録音の非秘密パス、Twilioの有無を照会した。send成功を確認したが、team readbackはno_placement_record / delivery offであり、着手・受諾は未確認。
+- 現在cursorは2を維持する。必要な外部依存は、認可済みBolna実行owner、接続済みTwilio経路と同意済み受信先、既存execution/録音の所在。通話・55秒動画・Buildathon提出は未完了。
