@@ -73,3 +73,15 @@ Bolnaの利用可能な鍵、agent ID、Twilio接続・発信番号、同意済�
 - [Builders提出フォーム](https://www.bolna.ai/builders/submit) はHTTP 200。項目はcategory・title・public link・description・handle。送信はpublic repoへのPRを開き、maintainerのmergeで掲載する方式。Buildathon締切・動画必須条件・コンテスト提出先は未確認。推測した `/buildathon` は404、DuckDuckGo検索はhuman challenge、crwlはローカルDBエラーだった。
 - floor2の `fable-main` へagmsgで認可済みowner経路、既存execution・録音の非秘密パス、Twilioの有無を照会した。send成功を確認したが、team readbackはno_placement_record / delivery offであり、着手・受諾は未確認。
 - 現在cursorは2を維持する。必要な外部依存は、認可済みBolna実行owner、接続済みTwilio経路と同意済み受信先、既存execution/録音の所在。通話・55秒動画・Buildathon提出は未完了。
+
+
+## owner・録音所在の追加調査
+
+目的は既存ownerのexecution、元録音、Twilio接続readbackの取得。新規発信は行わず、既存effectを照合する。
+
+- `/private/tmp/anicca-pause-demo.mp4` を発見。ffprobe実測58.002993秒、1,024,626 bytes、H264映像とAAC音声あり。永続コピーは `/Users/anicca/anicca-project/output/life-manager/artifacts/bolna/anicca-pause-demo.mp4`。SHA256: `477674e1f7468ae9756caafe1a3f4ab5d04345cf6a6a57c12c8406d8eeb3e43b`。60秒以内の映像ファイルの存在は確認したが、55秒条件および元録音との対応は未確認。
+- owner作業コピー `/Users/anicca/anicca-project/anicca-voice` を発見。main a590511、TRANSCRIPT.mdとwebcall driverはあるが、run_id.txt・call.webm・execution JSONは存在しない。元録音の所在とexecution IDは未取得。
+- Credential SSOT全191件を再照合しBolna/Twilio serviceなし。browser registryも該当なし。Twilio接続済みとは判定できない。
+- agmsg floor2のsol-codex受信箱に返信なし。fable-mainはno_placement_record、delivery offで稼働未確認。映像所在、execution/run_id、元録音、Twilio接続readbackとCall SIDの有無を短文照会済み。送信成功は受諾の証拠ではない。
+- Desktop Commanderの端末一覧は同じMac Mini一台がOnline。別owner実行環境は見つからない。
+- 現在cursorはexecution/元録音/Twilio公式readbackの取得を維持。必要な外部依存は認可済みBolna owner実行環境。次はowner返信の実行IDと保存先を照合し既存executionをGETする。Twilio call receiptなしに新規発信・再送しない。
