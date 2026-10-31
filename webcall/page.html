@@ -1,0 +1,26 @@
+<html><body><script>
+const AC=new AudioContext(); const callerDest=AC.createMediaStreamDestination(); const mix=AC.createMediaStreamDestination();
+const cg=AC.createGain(); cg.connect(callerDest); cg.connect(mix);
+navigator.mediaDevices.getUserMedia=async()=>{log("gum");return new MediaStream(callerDest.stream.getAudioTracks().map(t=>t.clone()));};
+window.LOG=[]; const log=m=>{LOG.push((performance.now()/1000).toFixed(1)+' '+m);};
+const OrigPC=window.RTCPeerConnection;
+window.RTCPeerConnection=function(...a){const pc=new OrigPC(...a);pc.addEventListener('track',e=>{log('remote track');const s=AC.createMediaStreamSource(new MediaStream([e.track]));s.connect(mix);const an=AC.createAnalyser();s.connect(an);window.AN=an;const el=new Audio();el.srcObject=new MediaStream([e.track]);el.muted=true;el.play().catch(()=>{});});return pc;};
+window.RTCPeerConnection.prototype=OrigPC.prototype;
+const bufs=[];
+async function load(){for(let i=0;i<7;i++){const r=await fetch('u'+i+'.wav');bufs.push(await AC.decodeAudioData(await r.arrayBuffer()));}}
+function play(i){return new Promise(res=>{const s=AC.createBufferSource();s.buffer=bufs[i];s.connect(cg);s.onended=res;s.start();log('caller '+i);});}
+window.run=async()=>{await AC.resume();await load();
+ const rec=new MediaRecorder(mix.stream,{mimeType:'audio/webm'});const chunks=[];rec.ondataavailable=e=>chunks.push(e.data);rec.start(1000);
+ const call=new BolnaWebCall({getSession:async()=>(await fetch('/session',{method:'POST'})).json()});
+ call.on('call-start',()=>log('call-start'));call.on('call-end',e=>{log('call-end '+JSON.stringify(e));window.ENDED=true;});call.on('error',e=>log('error '+e.code+' '+e.message));
+ await call.start();
+ let idx=0,speaking=false,quiet=0,heard=false;const d=new Uint8Array(2048);
+ const t0=performance.now();
+ while(!window.ENDED && performance.now()-t0<170000){await new Promise(r=>setTimeout(r,100));
+  if(!window.AN)continue;AN.getByteTimeDomainData(d);let m=0;for(const v of d)m=Math.max(m,Math.abs(v-128));
+  if(m>6){heard=true;quiet=0;}else quiet+=100;
+  if(heard&&quiet>1500&&idx<7){heard=false;await play(idx++);}
+ }
+ await new Promise(r=>setTimeout(r,2500)); try{call.stop()}catch(e){} rec.stop(); await new Promise(r=>setTimeout(r,800));
+ const b=new Blob(chunks);const ab=await b.arrayBuffer();let s='';const u=new Uint8Array(ab);for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode(...u.subarray(i,i+8192));window.REC=btoa(s);window.DONE=true;};
+</script><script src="bolna-web-call.min.js"></script></body></html>
